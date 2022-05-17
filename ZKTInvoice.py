@@ -2,7 +2,7 @@ import codecs
 from base64 import b64encode, b64decode
 import datetime
 import pyqrcode
-#import png
+import png
 from pyqrcode import QRCode
 
 
@@ -36,7 +36,7 @@ class Invoice:
     if len(Second) < 2:
         Second = "0"+Second
 
-    NameOfSeller = "Mohammed Almalki"
+    NameOfSeller = "محمد المالكي الخطير"
     VatRNumber = "123456789012345"
     RealTime = "{}-{}-{}T{}:{}:{}Z".format(Year,Month,Day,Hour,Minute,Second)
     InvoiceTWVat = "10000.00"
@@ -47,14 +47,28 @@ class Invoice:
 
     def __init__(self):
         def NameOFSellerGenerator():
-            if len(hex(len(self.NameOfSeller)).lstrip("0x")) == 1:
-                NameOfSellerPART = "010{}".format(hex(len(self.NameOfSeller)).lstrip("0x"))
-                self.AllOfInvoice.append(NameOfSellerPART)
-            else:
-                NameOfSellerPART = "01{}".format(hex(len(self.NameOfSeller)).lstrip("0x"))
-                self.AllOfInvoice.append(NameOfSellerPART)
+            if self.NameOfSeller.isascii():
+                if len(hex(len(self.NameOfSeller)).lstrip("0x")) == 1:
+                    NameOfSellerPART = "010{}".format(hex(len(self.NameOfSeller)).lstrip("0x"))
+                    self.AllOfInvoice.append(NameOfSellerPART)
+                else:
+                    NameOfSellerPART = "01{}".format(hex(len(self.NameOfSeller)).lstrip("0x"))
+                    self.AllOfInvoice.append(NameOfSellerPART)
 
-            self.AllOfInvoice.append(self.NameOfSeller.encode("utf-8").hex())
+                self.AllOfInvoice.append(self.NameOfSeller.encode("utf-8").hex())
+            else:
+                self.NameOfSeller = bytes(self.NameOfSeller.encode())
+                print(self.NameOfSeller)
+
+                if len(hex(len(self.NameOfSeller)).lstrip("0x")) == 1:
+                    NameOfSellerPART = "010{}".format(hex(len(self.NameOfSeller)).lstrip("0x"))
+                    self.AllOfInvoice.append(NameOfSellerPART)
+                else:
+                    NameOfSellerPART = "01{}".format(hex(len(self.NameOfSeller)).lstrip("0x"))
+                    self.AllOfInvoice.append(NameOfSellerPART)
+
+                self.AllOfInvoice.append(bytes(self.NameOfSeller).hex())
+                print(self.NameOfSeller)
 
 
         def VatRNumberGenerator():
@@ -120,7 +134,7 @@ class Invoice:
 
         url.svg("myqr.svg", scale=8)
 
-        url.png('my44qr.png')
+        url.png('myqr.png')
 
 
         #print(bytes(self.NameOfSeller.encode('UTF8')))
